@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import WebGLBackground from './WebGLBackground';
+import { API_URL } from '../config';
 
 export default function Hero() {
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     // Timestamp busts browser + CDN cache so admin changes reflect immediately
-    fetch(`http://localhost:3001/api/profile?t=${Date.now()}`, {
+    fetch(`${API_URL}/api/profile?t=${Date.now()}`, {
       cache: 'no-store',
       headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' },
     })
@@ -24,7 +25,7 @@ export default function Hero() {
   const imageSrc = profile?.imageUrl
     ? (profile.imageUrl.startsWith('http')
         ? profile.imageUrl
-        : `http://localhost:3001${profile.imageUrl}?t=${Date.now()}`)
+        : `${API_URL}${profile.imageUrl}?t=${Date.now()}`)
     : '/profile.png';
 
   // Compute dynamic CV Download URL

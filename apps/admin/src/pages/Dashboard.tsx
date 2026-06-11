@@ -58,7 +58,7 @@ export default function Dashboard() {
         <div className={`w-2.5 h-2.5 rounded-full ${apiStatus === 'online' ? 'bg-green-400 animate-pulse' : apiStatus === 'offline' ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'}`}></div>
         <Activity size={16} className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'} />
         <span className="text-sm font-semibold">
-          API Server: {apiStatus === 'online' ? '✅ Online — http://localhost:3001' : apiStatus === 'offline' ? '❌ Offline — Start the API server first!' : '⏳ Checking...'}
+          API Server: {apiStatus === 'online' ? `✅ Online — ${API_URL}` : apiStatus === 'offline' ? '❌ Offline — Start the API server first!' : '⏳ Checking...'}
         </span>
       </div>
 

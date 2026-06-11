@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Plus, Trash2, Edit2, X, Upload, FileText, Image as ImageIcon } from 'lucide-react';
+import { API_URL } from '../config';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = `${API_URL}/api`;
 
 
 const emptyForm = { year: '', title: '', organization: '', description: '', fileUrl: '' };
