@@ -1,17 +1,12 @@
 import { PrismaClient } from './generated/prisma/client.js';
-import { PrismaLibSQL } from '@prisma/adapter-libsql';
-import { createClient } from '@libsql/client';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import pkg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { Pool } = pkg;
 
-// Production: Turso cloud DB | Development: local SQLite file
-const url = process.env.TURSO_DATABASE_URL ?? `file:${resolve(__dirname, '../dev.db')}`;
-const authToken = process.env.TURSO_AUTH_TOKEN;
+const connectionString = process.env.DATABASE_URL;
 
-const client = createClient({ url, authToken });
-const adapter = new PrismaLibSQL(client);
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
 export const prisma = new PrismaClient({ adapter });

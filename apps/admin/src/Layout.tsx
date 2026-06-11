@@ -1,12 +1,13 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UserCircle, Briefcase, FolderGit2, Star, Award } from 'lucide-react';
+import { LayoutDashboard, UserCircle, Info, Briefcase, FolderGit2, Star, Award } from 'lucide-react';
 
 export default function Layout() {
   const location = useLocation();
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Profile', path: '/profile', icon: UserCircle },
+    { name: 'Profile / Hero', path: '/profile', icon: UserCircle },
+    { name: 'About Section', path: '/about', icon: Info },
     { name: 'Services', path: '/services', icon: Briefcase },
     { name: 'Portfolio', path: '/portfolio', icon: FolderGit2 },
     { name: 'Experience', path: '/experience', icon: Star },

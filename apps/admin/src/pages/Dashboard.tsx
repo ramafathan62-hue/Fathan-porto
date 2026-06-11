@@ -58,7 +58,7 @@ export default function Dashboard() {
         <div className={`w-2.5 h-2.5 rounded-full ${apiStatus === 'online' ? 'bg-green-400 animate-pulse' : apiStatus === 'offline' ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'}`}></div>
         <Activity size={16} className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'} />
         <span className="text-sm font-semibold">
-          API Server: {apiStatus === 'online' ? `✅ Online — ${API_URL}` : apiStatus === 'offline' ? '❌ Offline — Start the API server first!' : '⏳ Checking...'}
+          API Server: {apiStatus === 'online' ? '✅ Online — http://localhost:3001' : apiStatus === 'offline' ? '❌ Offline — Start the API server first!' : '⏳ Checking...'}
         </span>
       </div>
 
@@ -76,7 +76,7 @@ export default function Dashboard() {
             <p className="text-primary text-sm font-semibold">{profile.title}</p>
             <p className="text-on-surface-variant text-sm mt-1 line-clamp-1">{profile.bio}</p>
           </div>
-          <a href={import.meta.env.VITE_WEB_URL || 'http://localhost:5173'} target="_blank" rel="noopener noreferrer"
+          <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/30 rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors"
           >
             <ExternalLink size={16} />

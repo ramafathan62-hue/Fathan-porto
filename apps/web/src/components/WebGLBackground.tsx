@@ -22,7 +22,7 @@ export default function WebGLBackground() {
     }
     syncSize()
 
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+    const gl = (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null
     if (!gl) return
 
     const vs = `attribute vec2 a_position;
@@ -97,9 +97,9 @@ void main() {
 }`
 
     function cs(type: number, src: string) {
-      const s = gl.createShader(type)!
-      gl.shaderSource(s, src)
-      gl.compileShader(s)
+      const s = gl!.createShader(type)!
+      gl!.shaderSource(s, src)
+      gl!.compileShader(s)
       return s
     }
 

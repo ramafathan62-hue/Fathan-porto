@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Save, Upload, User } from 'lucide-react';
-
 import { API_URL } from '../config';
-const API_BASE = `${API_URL}/api`;
 
+const API_BASE = `${API_URL}/api`;
 
 export default function Profile() {
   const [profile, setProfile] = useState<any>(null);
@@ -16,17 +15,17 @@ export default function Profile() {
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
-    setTimeout(() => setToast(null), 3500);
+    setTimeout(() => setToast(null), 4000);
   };
 
   useEffect(() => {
-    axios.get(`${API_BASE}/profile`, { headers: { 'Cache-Control': 'no-cache' } })
+    axios.get(`${API_BASE}/profile?t=${Date.now()}`)
       .then(res => { setProfile(res.data); setLoading(false); })
       .catch(() => { showToast('error', 'Failed to load profile'); setLoading(false); });
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    setProfile((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,10 +38,12 @@ export default function Profile() {
       const res = await axios.post(`${API_BASE}/upload`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setProfile({ ...profile, imageUrl: res.data.fileUrl });
-      showToast('success', 'Image uploaded!');
+      // Immediately update profile state with new imageUrl
+      const newUrl = res.data.fileUrl;
+      setProfile((prev: any) => ({ ...prev, imageUrl: newUrl }));
+      showToast('success', '✓ Photo uploaded! Click "Save Profile" to apply.');
     } catch {
-      showToast('error', 'Upload failed');
+      showToast('error', 'Upload failed. Try again.');
     } finally {
       setUploading(false);
     }
@@ -50,10 +51,13 @@ export default function Profile() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!profile?.id) return;
     setSaving(true);
     try {
-      await axios.put(`${API_BASE}/profile/${profile.id}`, profile);
-      showToast('success', '✓ Profile saved! Refresh your portfolio to see changes.');
+      // Strip read-only fields before sending
+      const { id, createdAt, updatedAt, ...data } = profile;
+      await axios.put(`${API_BASE}/profile/${profile.id}`, data);
+      showToast('success', '✅ Profile saved! Refresh your website to see changes.');
     } catch (err: any) {
       showToast('error', err?.response?.data?.error || 'Failed to save');
     } finally {
@@ -89,35 +93,39 @@ export default function Profile() {
         <div className="bg-surface-container p-6 rounded-2xl glass-card">
           <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><User size={20} className="text-primary" /> Profile Photo</h3>
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-full overflow-hidden bg-surface-variant border-2 border-primary/30 shrink-0">
+            {/* Preview */}
+            <div className="w-28 h-28 rounded-full overflow-hidden bg-surface-variant border-2 border-primary/30 shrink-0">
               <img
-                src={profile?.imageUrl || '/profile.png'}
+                src={profile?.imageUrl ? `${API_URL}${profile.imageUrl.startsWith('/') ? '' : '/'}${profile.imageUrl}?t=${Date.now()}` : '/profile.png'}
                 alt="Profile"
                 className="w-full h-full object-cover"
-                onError={e => { e.currentTarget.src = 'https://via.placeholder.com/96?text=Photo'; }}
+                onError={e => { e.currentTarget.src = 'https://via.placeholder.com/112?text=Photo'; }}
               />
             </div>
-            <div className="space-y-2">
-              <input
-                name="imageUrl"
-                value={profile?.imageUrl || ''}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="/profile.png or https://..."
-              />
-              <div className="flex items-center gap-2">
-                <span className="text-on-surface-variant text-sm">or</span>
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors disabled:opacity-50"
-                >
-                  <Upload size={16} />
-                  {uploading ? 'Uploading...' : 'Upload Photo'}
-                </button>
-                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            <div className="flex-1 space-y-3">
+              {/* Current URL display */}
+              <div>
+                <label className="block text-sm text-on-surface-variant mb-1">Current Image URL</label>
+                <input
+                  name="imageUrl"
+                  value={profile?.imageUrl || ''}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="/profile.png or https://..."
+                />
               </div>
+              {/* Upload button */}
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 text-primary rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors disabled:opacity-50"
+              >
+                <Upload size={16} />
+                {uploading ? 'Uploading...' : '📁 Upload New Photo'}
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              <p className="text-xs text-on-surface-variant">Upload photo first → then click "Save Profile"</p>
             </div>
           </div>
         </div>
@@ -129,12 +137,19 @@ export default function Profile() {
           <div>
             <label className="block text-sm font-label-md text-on-surface-variant mb-2">Full Name</label>
             <input name="name" value={profile?.name || ''} onChange={handleChange} required className={inputClass} />
+            <p className="text-xs text-on-surface-variant mt-1">Nama terakhir akan ditampilkan di Hero: "Hello, I'm <strong>[kata terakhir]</strong>"</p>
           </div>
 
           <div>
             <label className="block text-sm font-label-md text-on-surface-variant mb-2">Professional Title / Tagline</label>
             <input name="title" value={profile?.title || ''} onChange={handleChange} required className={inputClass} placeholder="e.g. Digital Business Student | Creative Designer" />
             <p className="text-xs text-on-surface-variant mt-1">Shown as subtitle in Hero section</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-label-md text-on-surface-variant mb-2">CV / Resume Link (Google Drive, etc.)</label>
+            <input name="cvUrl" value={profile?.cvUrl || ''} onChange={handleChange} className={inputClass} placeholder="https://drive.google.com/..." />
+            <p className="text-xs text-on-surface-variant mt-1">Used for the "Download CV" button in the Hero section</p>
           </div>
         </div>
 
@@ -167,4 +182,3 @@ export default function Profile() {
     </div>
   );
 }
-

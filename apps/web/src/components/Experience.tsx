@@ -6,10 +6,10 @@ export default function Experience() {
   const [experiences, setExperiences] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/experience`, { cache: 'no-store' })
-      .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
-      .then(data => setExperiences(Array.isArray(data) ? data : []))
-      .catch(err => { console.error('Experience fetch error:', err); setExperiences([]); });
+    fetch(`${API_URL}/api/experience`)
+      .then(res => res.json())
+      .then(data => setExperiences(data))
+      .catch(err => console.error(err));
   }, []);
 
   const filteredExp = experiences.filter(exp => exp.type === filter);

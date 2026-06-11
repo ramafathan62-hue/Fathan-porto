@@ -5,10 +5,10 @@ export default function Services() {
   const [services, setServices] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/services`, { cache: 'no-store' })
-      .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
-      .then(data => setServices(Array.isArray(data) ? data : []))
-      .catch(err => { console.error('Services fetch error:', err); setServices([]); });
+    fetch(`${API_URL}/api/services`)
+      .then(res => res.json())
+      .then(data => setServices(data))
+      .catch(err => console.error(err));
   }, []);
 
   return (

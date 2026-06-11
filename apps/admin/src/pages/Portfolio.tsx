@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Edit2, X } from 'lucide-react';
-
+import { Plus, Trash2, Edit2, X, Upload, ExternalLink } from 'lucide-react';
 import { API_URL } from '../config';
+
 const API_BASE = `${API_URL}/api`;
 
-
-// 3 fixed categories matching portfolio filter on main website
 const CATEGORIES = [
   'UI/UX Design',
   'Brand Identity',
@@ -23,9 +21,11 @@ export default function Portfolio() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ ...emptyForm });
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -45,6 +45,25 @@ export default function Portfolio() {
   };
 
   useEffect(() => { fetchProjects(); }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await axios.post(`${API_BASE}/upload`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setFormData(prev => ({ ...prev, imageUrl: res.data.fileUrl }));
+      showToast('success', 'Image uploaded!');
+    } catch {
+      showToast('error', 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,24 +157,51 @@ export default function Portfolio() {
 
             <div>
               <label className="block text-sm font-label-md text-on-surface-variant mb-1">Category *</label>
-              <select
-                required
-                value={formData.category}
-                onChange={e => setFormData({ ...formData, category: e.target.value })}
-                className={inputClass}
-              >
+              <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className={inputClass}>
                 {CATEGORIES.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
             </div>
 
+            {/* Image Upload */}
             <div>
-              <label className="block text-sm font-label-md text-on-surface-variant mb-1">Image URL *</label>
-              <input required value={formData.imageUrl} onChange={e => setFormData({ ...formData, imageUrl: e.target.value })} className={inputClass} placeholder="https://..." />
-              {formData.imageUrl && (
-                <img src={formData.imageUrl} alt="preview" className="mt-2 rounded-lg w-full h-24 object-cover opacity-80" onError={e => (e.currentTarget.style.display = 'none')} />
-              )}
+              <label className="block text-sm font-label-md text-on-surface-variant mb-2">Project Image *</label>
+              <div className="space-y-2">
+                {/* Upload button */}
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-primary/30 rounded-lg text-primary hover:border-primary/60 hover:bg-primary/5 transition-colors disabled:opacity-50"
+                >
+                  <Upload size={18} />
+                  {uploading ? 'Uploading...' : 'Upload Image'}
+                </button>
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+
+                {/* Or paste URL */}
+                <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+                  <div className="flex-1 h-px bg-on-surface/10"></div>
+                  or paste URL
+                  <div className="flex-1 h-px bg-on-surface/10"></div>
+                </div>
+                <input
+                  value={formData.imageUrl}
+                  onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
+                  className={inputClass}
+                  placeholder="https://..."
+                />
+                {/* Image preview */}
+                {formData.imageUrl && (
+                  <img
+                    src={formData.imageUrl}
+                    alt="preview"
+                    className="mt-1 rounded-lg w-full h-28 object-cover border border-on-surface/10"
+                    onError={e => (e.currentTarget.style.display = 'none')}
+                  />
+                )}
+              </div>
             </div>
 
             <div>
@@ -202,6 +248,11 @@ export default function Portfolio() {
                 </div>
                 <span className="inline-block text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md mb-1">{project.category}</span>
                 <p className="text-on-surface-variant text-sm line-clamp-2">{project.description}</p>
+                {project.link && (
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-1 text-xs text-primary hover:underline">
+                    <ExternalLink size={11} /> View Link
+                  </a>
+                )}
               </div>
               <div className="flex flex-col gap-2 shrink-0">
                 <button onClick={() => handleEdit(project)} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
@@ -218,4 +269,3 @@ export default function Portfolio() {
     </div>
   );
 }
-

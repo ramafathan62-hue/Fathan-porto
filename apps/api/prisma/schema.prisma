@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Profile {
@@ -18,6 +18,7 @@ model Profile {
   title     String
   bio       String
   imageUrl  String?
+  cvUrl     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -66,4 +67,24 @@ model Certification {
   order        Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model AboutSection {
+  id            String   @id @default(cuid())
+  headline      String
+  journeyTitle  String
+  journeyText   String
+  skills        String   // JSON array of skill tags e.g. ["Strategic Planning","Team Leadership"]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Stat {
+  id        String   @id @default(cuid())
+  value     Int
+  suffix    String   @default("+")
+  label     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
