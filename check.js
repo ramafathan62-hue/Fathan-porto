@@ -1,0 +1,1 @@
+fetch('https://fathan-porto-lvagal2bz-ramafathan62-hues-projects.vercel.app/').then(r=>r.text()).then(t=>{const m=t.match(/src=\"(.*?index.*?.js)\"/); if(m) fetch('https://fathan-porto-lvagal2bz-ramafathan62-hues-projects.vercel.app'+m[1]).then(r=>r.text()).then(js=>console.log(js.substring(js.indexOf('VITE_API_URL')-20, js.indexOf('VITE_API_URL')+100)));})

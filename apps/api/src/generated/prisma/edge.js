@@ -214,6 +214,18 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -221,7 +233,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
@@ -240,8 +252,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Profile {\n  id        String   @id @default(cuid())\n  name      String\n  title     String\n  bio       String\n  imageUrl  String?\n  cvUrl     String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Service {\n  id          String   @id @default(cuid())\n  title       String\n  description String\n  icon        String\n  order       Int      @default(0)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Project {\n  id          String   @id @default(cuid())\n  title       String\n  category    String\n  imageUrl    String\n  description String\n  link        String?\n  order       Int      @default(0)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Experience {\n  id           String   @id @default(cuid())\n  type         String // \"work\" or \"leadership\"\n  period       String\n  title        String\n  organization String\n  description  String\n  order        Int      @default(0)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n\nmodel Certification {\n  id           String   @id @default(cuid())\n  year         String\n  title        String\n  organization String\n  description  String\n  fileUrl      String?\n  order        Int      @default(0)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n\nmodel AboutSection {\n  id           String   @id @default(cuid())\n  headline     String\n  journeyTitle String\n  journeyText  String\n  skills       String // JSON array of skill tags e.g. [\"Strategic Planning\",\"Team Leadership\"]\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n\nmodel Stat {\n  id        String   @id @default(cuid())\n  value     Int\n  suffix    String   @default(\"+\")\n  label     String\n  order     Int      @default(0)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n",
-  "inlineSchemaHash": "9376b8a97de6404ac5172484f7eb4c7d50eef42a62d8ef289a24443284530d29",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\", \"debian-openssl-1.1.x\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Profile {\n  id        String   @id @default(cuid())\n  name      String\n  title     String\n  bio       String\n  imageUrl  String?\n  cvUrl     String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Service {\n  id          String   @id @default(cuid())\n  title       String\n  description String\n  icon        String\n  order       Int      @default(0)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Project {\n  id          String   @id @default(cuid())\n  title       String\n  category    String\n  imageUrl    String\n  description String\n  link        String?\n  order       Int      @default(0)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Experience {\n  id           String   @id @default(cuid())\n  type         String // \"work\" or \"leadership\"\n  period       String\n  title        String\n  organization String\n  description  String\n  order        Int      @default(0)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n\nmodel Certification {\n  id           String   @id @default(cuid())\n  year         String\n  title        String\n  organization String\n  description  String\n  fileUrl      String?\n  order        Int      @default(0)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n\nmodel AboutSection {\n  id           String   @id @default(cuid())\n  headline     String\n  journeyTitle String\n  journeyText  String\n  skills       String // JSON array of skill tags e.g. [\"Strategic Planning\",\"Team Leadership\"]\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n}\n\nmodel Stat {\n  id        String   @id @default(cuid())\n  value     Int\n  suffix    String   @default(\"+\")\n  label     String\n  order     Int      @default(0)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n",
+  "inlineSchemaHash": "acf181624ed5cf280acd2593aa4eb4ba7a75139c87032f84370c42ee71d33671",
   "copyEngine": true
 }
 config.dirname = '/'
