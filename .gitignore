@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment variables (NEVER commit these)
+.env
+.env.local
+.env.production
+*.env
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Uploaded files (use Cloudinary in production)
+apps/web/public/uploads/
+
+# Prisma generated client
+apps/api/src/generated/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vercel
+.vercel/
+
+# Temp scripts
+fix-admin-urls.mjs
