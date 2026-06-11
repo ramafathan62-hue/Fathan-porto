@@ -8,7 +8,7 @@ export default function Certifications() {
   useEffect(() => {
     fetch(`${API_URL}/api/certifications`, { cache: 'no-store' })
       .then(res => res.json())
-      .then(data => { setCerts(data); setLoading(false); })
+      .then(data => { setCerts(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(err => { console.error(err); setLoading(false); });
   }, []);
 

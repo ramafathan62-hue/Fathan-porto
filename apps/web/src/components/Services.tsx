@@ -7,7 +7,7 @@ export default function Services() {
   useEffect(() => {
     fetch(`${API_URL}/api/services`)
       .then(res => res.json())
-      .then(data => setServices(data))
+      .then(data => setServices(Array.isArray(data) ? data : []))
       .catch(err => console.error(err));
   }, []);
 

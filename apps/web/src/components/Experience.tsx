@@ -8,7 +8,7 @@ export default function Experience() {
   useEffect(() => {
     fetch(`${API_URL}/api/experience`)
       .then(res => res.json())
-      .then(data => setExperiences(data))
+      .then(data => setExperiences(Array.isArray(data) ? data : []))
       .catch(err => console.error(err));
   }, []);
 
