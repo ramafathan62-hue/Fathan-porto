@@ -58,7 +58,7 @@ export default function Dashboard() {
         <div className={`w-2.5 h-2.5 rounded-full ${apiStatus === 'online' ? 'bg-green-400 animate-pulse' : apiStatus === 'offline' ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'}`}></div>
         <Activity size={16} className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'} />
         <span className="text-sm font-semibold">
-          API Server: {apiStatus === 'online' ? `✅ Online — ${API_URL}` : apiStatus === 'offline' ? '❌ Offline — Start the API server first!' : '⏳ Checking...'}
+          API Server: {apiStatus === 'online' ? `✅ Online — ${API_URL}` : apiStatus === 'offline' ? `❌ Offline — Cannot reach ${API_URL}` : '⏳ Checking...'}
         </span>
       </div>
 
@@ -76,7 +76,7 @@ export default function Dashboard() {
             <p className="text-primary text-sm font-semibold">{profile.title}</p>
             <p className="text-on-surface-variant text-sm mt-1 line-clamp-1">{profile.bio}</p>
           </div>
-          <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer"
+          <a href={import.meta.env.VITE_WEB_URL || '#'} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/30 rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors"
           >
             <ExternalLink size={16} />
@@ -128,10 +128,8 @@ export default function Dashboard() {
       {apiStatus === 'offline' && (
         <div className="border border-red-500/30 bg-red-500/5 p-5 rounded-xl">
           <h4 className="font-bold text-red-400 mb-2">⚠️ API Server is Offline</h4>
-          <p className="text-sm text-on-surface-variant mb-3">The admin panel cannot load data without the API server. Run this command to start it:</p>
-          <code className="block bg-surface-variant p-3 rounded-lg text-xs font-mono text-primary">
-            cd d:\website\fathan-porto\apps\api && npx tsx --watch src/index.ts
-          </code>
+          <p className="text-sm text-on-surface-variant mb-3">The admin panel cannot connect to the API at <strong>{API_URL}</strong>.</p>
+          <p className="text-sm text-on-surface-variant">If you are on Vercel, ensure <code>VITE_API_URL</code> is set correctly in the project settings. If running locally, start the API server with <code>npm run dev</code> inside apps/api.</p>
         </div>
       )}
     </div>

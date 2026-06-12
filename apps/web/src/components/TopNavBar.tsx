@@ -14,7 +14,7 @@ export default function TopNavBar() {
         <div className="flex items-center gap-md">
           {/* Admin Panel Button */}
           <a
-            href="http://localhost:5174"
+            href={import.meta.env.VITE_ADMIN_URL || '#'}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-xs px-md py-xs bg-primary/10 text-primary border border-primary/30 rounded-lg text-label-sm font-bold hover:bg-primary/20 hover:border-primary/60 transition-all active:scale-95"
