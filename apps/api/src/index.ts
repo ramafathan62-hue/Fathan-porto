@@ -91,7 +91,7 @@ app.get('/api/services', async (_req, res) => {
   try {
     const services = await prisma.service.findMany({ orderBy: { order: 'asc' } });
     res.json(services);
-  } catch (e) { res.status(500).json({ error: 'Failed' }); }
+  } catch (e) { res.status(500).json({ error: String(e) }); }
 });
 app.post('/api/services', async (req, res) => {
   try {
@@ -302,6 +302,18 @@ app.put('/api/about/:id', async (req, res) => {
 });
 
 // ─── Stats ───────────────────────────────────────────────────────────────────
+// Simple health check
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', time: new Date().toISOString() });
+});
+
+app.get('/api/debug', (_req, res) => {
+  res.json({
+    db: process.env.DATABASE_URL ? 'set' : 'missing',
+    node_env: process.env.NODE_ENV
+  });
+});
+
 app.get('/api/stats', async (_req, res) => {
   try {
     let stats = await prisma.stat.findMany({ orderBy: { order: 'asc' } });
