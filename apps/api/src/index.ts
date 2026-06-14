@@ -33,7 +33,18 @@ const storage = new CloudinaryStorage({
     };
   },
 });
-const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB limit
+const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }); // Setup static folder for uploads
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+
+app.get('/api/migrate', async (req, res) => {
+  try {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Project" ADD COLUMN IF NOT EXISTS "isFeatured" BOOLEAN NOT NULL DEFAULT false;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Certification" ADD COLUMN IF NOT EXISTS "isFeatured" BOOLEAN NOT NULL DEFAULT false;`);
+    res.json({ message: "Database migration successful! isFeatured column added." });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.use(cors());
 app.use(express.json());

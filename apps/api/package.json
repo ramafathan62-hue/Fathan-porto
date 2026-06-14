@@ -9,7 +9,7 @@
     "seed": "npx tsx src/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo \"Ready for Vercel\"",
-    "postinstall": "prisma generate && npx prisma db push --accept-data-loss"
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
