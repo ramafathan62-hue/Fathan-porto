@@ -93,6 +93,7 @@ export default function Portfolio() {
       imageUrl: item.imageUrl,
       description: item.description,
       link: item.link || '',
+      isFeatured: item.isFeatured || false,
     });
     setEditingId(item.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });

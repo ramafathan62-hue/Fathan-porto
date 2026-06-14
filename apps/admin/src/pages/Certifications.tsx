@@ -84,6 +84,7 @@ export default function Certifications() {
       organization: item.organization,
       description: item.description,
       fileUrl: item.fileUrl || '',
+      isFeatured: item.isFeatured || false,
     });
     setEditingId(item.id);
   };
