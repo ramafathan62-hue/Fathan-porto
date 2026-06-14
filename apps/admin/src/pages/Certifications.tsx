@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Edit2, X, Upload, FileText, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Edit2, X, Upload, FileText, Image as ImageIcon, Star } from 'lucide-react';
 
 import { API_URL } from '../config';
 const API_BASE = `${API_URL}/api`;
 
 
-const emptyForm = { year: '', title: '', organization: '', description: '', fileUrl: '' };
+const emptyForm = { year: '', title: '', organization: '', description: '', fileUrl: '', isFeatured: false };
 
 export default function Certifications() {
   const [certs, setCerts] = useState<any[]>([]);
@@ -96,6 +96,15 @@ export default function Certifications() {
       fetchCerts();
     } catch {
       showToast('error', 'Failed to delete');
+    }
+  };
+
+  const handleToggleFeatured = async (item: any) => {
+    try {
+      await axios.put(`${API_BASE}/certifications/${item.id}`, { isFeatured: !item.isFeatured });
+      fetchCerts();
+    } catch {
+      showToast('error', 'Failed to update featured status');
     }
   };
 
@@ -253,6 +262,9 @@ export default function Certifications() {
                       <p className="text-secondary text-sm font-semibold">{cert.organization}</p>
                     </div>
                     <div className="flex gap-1 shrink-0">
+                      <button onClick={() => handleToggleFeatured(cert)} className={`p-2 rounded-lg transition-colors ${cert.isFeatured ? 'text-yellow-400 hover:bg-yellow-400/10' : 'text-on-surface-variant hover:text-yellow-400 hover:bg-yellow-400/10'}`} title={cert.isFeatured ? "Unfeature Certification" : "Feature Certification"}>
+                        <Star size={16} fill={cert.isFeatured ? "currentColor" : "none"} />
+                      </button>
                       <button onClick={() => handleEdit(cert)} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">
                         <Edit2 size={16} />
                       </button>

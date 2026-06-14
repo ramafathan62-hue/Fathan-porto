@@ -4,6 +4,7 @@ import { API_URL } from '../config';
 export default function Certifications() {
   const [certs, setCerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/api/certifications`, { cache: 'no-store' })
@@ -28,7 +29,8 @@ export default function Certifications() {
               Loading certifications...
             </div>
           )}
-          {!loading && certs.map((cert) => (
+          
+          {!loading && (showAll ? certs : (certs.some(c => c.isFeatured) ? certs.filter(c => c.isFeatured) : certs).slice(0, 4)).map((cert) => (
             <div key={cert.id} className="glass-card p-xl rounded-xl flex gap-md items-start group">
               {/* Icon or thumbnail */}
               {cert.fileUrl && !isPdf(cert.fileUrl) ? (
@@ -75,6 +77,14 @@ export default function Certifications() {
             <div className="col-span-full text-center py-12 text-on-surface-variant">No certifications added yet.</div>
           )}
         </div>
+
+        {!loading && !showAll && certs.length > 4 && (
+          <div className="mt-4xl text-center reveal active">
+            <button onClick={() => setShowAll(true)} className="px-xl py-md rounded-full border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-lg hover:shadow-primary/20">
+              View All Certifications
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )

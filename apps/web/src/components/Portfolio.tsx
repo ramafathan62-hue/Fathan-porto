@@ -62,7 +62,7 @@ function ProjectModal({ project, onClose }: { project: any; onClose: () => void 
             </div>
             {project.link && (
               <a
-                href={project.link}
+                href={project.link.startsWith('http') ? project.link : `https://${project.link}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-xs bg-primary/10 text-primary border border-primary/30 px-md py-sm rounded-lg font-bold hover:bg-primary/20 transition-colors"
@@ -89,6 +89,7 @@ export default function Portfolio() {
   const [filter, setFilter] = useState('All');
   const [projects, setProjects] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/api/projects?t=${Date.now()}`, { cache: 'no-store' })
@@ -100,7 +101,10 @@ export default function Portfolio() {
   const handleClose = useCallback(() => setSelected(null), []);
 
   const categories = ['All', ...Array.from(new Set(projects.map(p => p.category)))];
-  const filteredProjects = filter === 'All' ? projects : projects.filter(p => p.category === filter);
+  
+  const featuredProjects = projects.some(p => p.isFeatured) ? projects.filter(p => p.isFeatured) : projects;
+  const displayProjects = showAll ? projects : featuredProjects.slice(0, 4);
+  const filteredProjects = filter === 'All' ? displayProjects : displayProjects.filter(p => p.category === filter);
 
   return (
     <section className="py-4xl bg-surface-container-lowest" id="portfolio">
@@ -161,11 +165,13 @@ export default function Portfolio() {
           )}
         </div>
 
-        <div className="mt-4xl text-center reveal active">
-          <button className="px-xl py-md rounded-full border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-lg hover:shadow-primary/20">
-            View All Projects
-          </button>
-        </div>
+        {!showAll && projects.length > 4 && (
+          <div className="mt-4xl text-center reveal active">
+            <button onClick={() => setShowAll(true)} className="px-xl py-md rounded-full border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-lg hover:shadow-primary/20">
+              View All Projects
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

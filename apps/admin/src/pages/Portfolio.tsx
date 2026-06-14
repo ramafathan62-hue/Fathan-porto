@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Edit2, X, Upload, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Edit2, X, Upload, ExternalLink, Star } from 'lucide-react';
 import { API_URL } from '../config';
 
 const API_BASE = `${API_URL}/api`;
@@ -15,7 +15,7 @@ const CATEGORIES = [
   'Graphic Design',
 ];
 
-const emptyForm = { title: '', category: 'UI/UX Design', imageUrl: '', description: '', link: '' };
+const emptyForm = { title: '', category: 'UI/UX Design', imageUrl: '', description: '', link: '', isFeatured: false };
 
 export default function Portfolio() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -114,6 +114,15 @@ export default function Portfolio() {
     }
   };
 
+  const handleToggleFeatured = async (item: any) => {
+    try {
+      await axios.put(`${API_BASE}/projects/${item.id}`, { isFeatured: !item.isFeatured });
+      fetchProjects();
+    } catch {
+      showToast('error', 'Failed to update featured status');
+    }
+  };
+
   const inputClass = 'w-full bg-surface-variant border border-on-surface/10 rounded-lg px-4 py-2 text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors';
 
   return (
@@ -157,11 +166,16 @@ export default function Portfolio() {
 
             <div>
               <label className="block text-sm font-label-md text-on-surface-variant mb-1">Category *</label>
-              <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className={inputClass}>
+              <input required list="categories-list" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className={inputClass} placeholder="e.g. UI/UX Design" />
+              <datalist id="categories-list">
                 {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat} />
                 ))}
-              </select>
+                {/* Also include any custom categories that exist in current projects */}
+                {Array.from(new Set(projects.map(p => p.category))).filter(c => !CATEGORIES.includes(c)).map(cat => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
 
             {/* Image Upload */}
@@ -255,6 +269,9 @@ export default function Portfolio() {
                 )}
               </div>
               <div className="flex flex-col gap-2 shrink-0">
+                <button onClick={() => handleToggleFeatured(project)} className={`p-2 rounded-lg transition-colors ${project.isFeatured ? 'text-yellow-400 hover:bg-yellow-400/10' : 'text-on-surface-variant hover:text-yellow-400 hover:bg-yellow-400/10'}`} title={project.isFeatured ? "Unfeature Project" : "Feature Project"}>
+                  <Star size={16} fill={project.isFeatured ? "currentColor" : "none"} />
+                </button>
                 <button onClick={() => handleEdit(project)} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
                   <Edit2 size={16} />
                 </button>

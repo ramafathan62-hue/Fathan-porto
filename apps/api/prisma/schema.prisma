@@ -42,6 +42,7 @@ model Project {
   imageUrl    String
   description String
   link        String?
+  isFeatured  Boolean  @default(false)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -66,6 +67,7 @@ model Certification {
   organization String
   description  String
   fileUrl      String?
+  isFeatured   Boolean  @default(false)
   order        Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
