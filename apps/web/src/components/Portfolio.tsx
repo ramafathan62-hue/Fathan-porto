@@ -165,10 +165,10 @@ export default function Portfolio() {
           )}
         </div>
 
-        {!showAll && filter === 'All' && projects.length > 4 && (
+        {filter === 'All' && projects.length > 4 && (
           <div className="mt-4xl text-center reveal active">
-            <button onClick={() => setShowAll(true)} className="px-xl py-md rounded-full border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-lg hover:shadow-primary/20">
-              View All Projects
+            <button onClick={() => setShowAll(!showAll)} className="px-xl py-md rounded-full border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-lg hover:shadow-primary/20">
+              {showAll ? 'Show Less Projects' : 'View All Projects'}
             </button>
           </div>
         )}
