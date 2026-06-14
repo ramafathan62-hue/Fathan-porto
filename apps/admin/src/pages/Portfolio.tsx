@@ -25,6 +25,7 @@ export default function Portfolio() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ ...emptyForm });
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
@@ -78,6 +79,7 @@ export default function Portfolio() {
       }
       setFormData({ ...emptyForm });
       setEditingId(null);
+      setIsCustomCategory(false);
       fetchProjects();
     } catch (err: any) {
       showToast('error', err?.response?.data?.error || 'Failed to save project');
@@ -95,6 +97,12 @@ export default function Portfolio() {
       link: item.link || '',
       isFeatured: item.isFeatured || false,
     });
+    const allCategories = Array.from(new Set([...CATEGORIES, ...projects.map(p => p.category)]));
+    if (!allCategories.includes(item.category)) {
+      setIsCustomCategory(true);
+    } else {
+      setIsCustomCategory(false);
+    }
     setEditingId(item.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -102,6 +110,7 @@ export default function Portfolio() {
   const handleCancel = () => {
     setFormData({ ...emptyForm });
     setEditingId(null);
+    setIsCustomCategory(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -167,16 +176,38 @@ export default function Portfolio() {
 
             <div>
               <label className="block text-sm font-label-md text-on-surface-variant mb-1">Category *</label>
-              <input required list="categories-list" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className={inputClass} placeholder="e.g. UI/UX Design" />
-              <datalist id="categories-list">
-                {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat} />
+              <select 
+                required={!isCustomCategory} 
+                value={isCustomCategory ? 'ADD_NEW' : formData.category} 
+                onChange={e => {
+                  if (e.target.value === 'ADD_NEW') {
+                    setIsCustomCategory(true);
+                    setFormData({ ...formData, category: '' });
+                  } else {
+                    setIsCustomCategory(false);
+                    setFormData({ ...formData, category: e.target.value });
+                  }
+                }} 
+                className={inputClass}
+              >
+                <option value="" disabled>Select a category</option>
+                {Array.from(new Set([...CATEGORIES, ...projects.map(p => p.category)])).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
-                {/* Also include any custom categories that exist in current projects */}
-                {Array.from(new Set(projects.map(p => p.category))).filter(c => !CATEGORIES.includes(c)).map(cat => (
-                  <option key={cat} value={cat} />
-                ))}
-              </datalist>
+                <option value="ADD_NEW" className="font-bold text-primary">+ Add New Category...</option>
+              </select>
+              
+              {isCustomCategory && (
+                <input 
+                  required 
+                  type="text" 
+                  value={formData.category} 
+                  onChange={e => setFormData({ ...formData, category: e.target.value })} 
+                  className={`mt-2 ${inputClass}`} 
+                  placeholder="Type new category name..." 
+                  autoFocus
+                />
+              )}
             </div>
 
             {/* Image Upload */}

@@ -101,10 +101,10 @@ export default function Portfolio() {
   const handleClose = useCallback(() => setSelected(null), []);
 
   const categories = ['All', ...Array.from(new Set(projects.map(p => p.category)))];
-  
-  const featuredProjects = projects.some(p => p.isFeatured) ? projects.filter(p => p.isFeatured) : projects;
-  const displayProjects = showAll ? projects : featuredProjects.slice(0, 4);
-  const filteredProjects = filter === 'All' ? displayProjects : displayProjects.filter(p => p.category === filter);
+  const baseFiltered = filter === 'All' ? projects : projects.filter(p => p.category === filter);
+  const filteredProjects = (showAll || filter !== 'All') 
+    ? baseFiltered 
+    : (projects.some(p => p.isFeatured) ? projects.filter(p => p.isFeatured) : projects).slice(0, 4);
 
   return (
     <section className="py-4xl bg-surface-container-lowest" id="portfolio">
@@ -165,7 +165,7 @@ export default function Portfolio() {
           )}
         </div>
 
-        {!showAll && projects.length > 4 && (
+        {!showAll && filter === 'All' && projects.length > 4 && (
           <div className="mt-4xl text-center reveal active">
             <button onClick={() => setShowAll(true)} className="px-xl py-md rounded-full border border-primary text-primary font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-lg hover:shadow-primary/20">
               View All Projects
