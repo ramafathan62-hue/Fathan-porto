@@ -26,10 +26,14 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (_req, file) => {
+    const isPdf = file.mimetype === 'application/pdf';
     return {
       folder: 'fathan-porto',
       allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif', 'pdf'],
       public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+      resource_type: isPdf ? 'raw' : 'image',
+      access_mode: 'public',
+      type: 'upload',
     };
   },
 });
@@ -41,6 +45,69 @@ app.get('/api/migrate', async (req, res) => {
     await prisma.$executeRawUnsafe(`ALTER TABLE "Project" ADD COLUMN IF NOT EXISTS "isFeatured" BOOLEAN NOT NULL DEFAULT false;`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Certification" ADD COLUMN IF NOT EXISTS "isFeatured" BOOLEAN NOT NULL DEFAULT false;`);
     res.json({ message: "Database migration successful! isFeatured column added." });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/fix-cloudinary', async (req, res) => {
+  try {
+    // Get all certifications with fileUrl
+    const certs = await prisma.certification.findMany({ where: { fileUrl: { not: '' } } });
+    const projects = await prisma.project.findMany();
+    const results: string[] = [];
+
+    const fixUrl = async (url: string, label: string) => {
+      if (!url || !url.includes('cloudinary.com')) return url;
+      try {
+        // Extract public_id from URL
+        const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/);
+        if (match) {
+          const publicId = decodeURIComponent(match[1]);
+          // Try image first, then raw
+          for (const resourceType of ['image', 'raw'] as const) {
+            try {
+              await cloudinary.uploader.rename(publicId, publicId, {
+                resource_type: resourceType,
+                overwrite: true,
+                invalidate: true,
+                access_mode: 'public',
+              } as any);
+              results.push(`✅ ${label}: Made public (${resourceType})`);
+              return url;
+            } catch (e: any) {
+              if (!e.message?.includes('not found')) continue;
+            }
+          }
+          // Alternative: update access_mode via API
+          for (const resourceType of ['image', 'raw'] as const) {
+            try {
+              await cloudinary.api.update(publicId, {
+                resource_type: resourceType,
+                access_mode: 'public',
+              } as any);
+              results.push(`✅ ${label}: Updated to public (${resourceType})`);
+              return url;
+            } catch (e: any) {
+              // continue trying
+            }
+          }
+          results.push(`⚠️ ${label}: Could not update`);
+        }
+      } catch (e: any) {
+        results.push(`❌ ${label}: ${e.message}`);
+      }
+      return url;
+    };
+
+    for (const cert of certs) {
+      if (cert.fileUrl) await fixUrl(cert.fileUrl, `Cert: ${cert.title}`);
+    }
+    for (const proj of projects) {
+      if (proj.imageUrl) await fixUrl(proj.imageUrl, `Project: ${proj.title}`);
+    }
+
+    res.json({ message: "Cloudinary fix completed", results });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
