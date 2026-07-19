@@ -1,8 +1,10 @@
+import ThemeToggle from './ThemeToggle';
+
 export default function TopNavBar() {
   return (
-    <nav className="sticky top-0 w-full z-50 bg-surface/60 dark:bg-surface/60 backdrop-blur-xl border-b border-on-surface/10 shadow-sm">
+    <nav className="sticky top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-on-surface/10 shadow-sm transition-colors duration-300">
       <div className="flex justify-between items-center px-lg py-sm max-w-[1200px] mx-auto">
-        <div className="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface tracking-tight">Rama Fikri Fathan</div>
+        <div className="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">Rama Fikri Fathan</div>
         <div className="hidden md:flex gap-lg items-center">
           <a className="text-primary font-bold border-b-2 border-primary pb-1" href="#home">Home</a>
           <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#about">About</a>
@@ -11,7 +13,7 @@ export default function TopNavBar() {
           <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#experience">Experience</a>
           <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#contact">Contact</a>
         </div>
-        <div className="flex items-center gap-md">
+        <div className="flex items-center gap-sm">
           {/* Admin Panel Button */}
           <a
             href={import.meta.env.VITE_ADMIN_URL || '#'}
@@ -23,10 +25,8 @@ export default function TopNavBar() {
             <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
             Admin
           </a>
-          <button className="active:scale-95 transition-transform text-on-surface-variant hover:text-primary">
-            <span className="material-symbols-outlined">dark_mode</span>
-          </button>
-          <button className="md:hidden">
+          <ThemeToggle />
+          <button className="md:hidden text-on-surface-variant hover:text-primary">
             <span className="material-symbols-outlined">menu</span>
           </button>
         </div>

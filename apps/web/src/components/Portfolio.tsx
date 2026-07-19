@@ -1,6 +1,46 @@
 import { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '../config';
 
+// Category icon mapping for placeholders
+const CATEGORY_ICONS: Record<string, string> = {
+  'UI/UX Design': 'design_services',
+  'Graphic Design': 'palette',
+  'Website': 'language',
+  'Web Development': 'code',
+  'Mobile App': 'smartphone',
+  'Photography': 'photo_camera',
+  'Videography': 'videocam',
+  'Business Strategy': 'trending_up',
+  'Branding': 'brush',
+};
+
+function ProjectPlaceholder({ title, category }: { title: string; category: string }) {
+  const icon = CATEGORY_ICONS[category] || 'folder_open';
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/20 via-surface-variant to-secondary/20">
+      <span className="material-symbols-outlined text-5xl text-primary/60 mb-2">{icon}</span>
+      <span className="text-on-surface-variant/60 text-sm font-semibold text-center px-4 line-clamp-2">{title}</span>
+    </div>
+  );
+}
+
+function ProjectImage({ src, alt, category, className }: { src: string; alt: string; category: string; className?: string }) {
+  const [hasError, setHasError] = useState(false);
+  
+  if (!src || hasError) {
+    return <ProjectPlaceholder title={alt} category={category} />;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => setHasError(true)}
+    />
+  );
+}
+
 function ProjectModal({ project, onClose }: { project: any; onClose: () => void }) {
   // Close on Escape key
   useEffect(() => {
@@ -37,9 +77,10 @@ function ProjectModal({ project, onClose }: { project: any; onClose: () => void 
 
         {/* Image */}
         <div className="relative w-full aspect-video shrink-0 overflow-hidden bg-surface-variant">
-          <img
+          <ProjectImage
             src={project.imageUrl}
             alt={project.title}
+            category={project.category}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container/80 to-transparent" />
@@ -107,7 +148,7 @@ export default function Portfolio() {
     : (projects.some(p => p.isFeatured) ? projects.filter(p => p.isFeatured) : projects).slice(0, 4);
 
   return (
-    <section className="py-4xl bg-surface-container-lowest" id="portfolio">
+    <section className="py-4xl bg-surface-container-lowest transition-colors duration-300" id="portfolio">
       {/* Project Detail Modal */}
       {selected && <ProjectModal project={selected} onClose={handleClose} />}
 
@@ -138,9 +179,10 @@ export default function Portfolio() {
               onClick={() => setSelected(project)}
             >
               <div className="relative overflow-hidden rounded-2xl mb-lg aspect-[4/3] bg-surface-variant">
-                <img
+                <ProjectImage
                   src={project.imageUrl}
                   alt={project.title}
+                  category={project.category}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">

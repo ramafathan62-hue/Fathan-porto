@@ -1,6 +1,14 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
+    <script>
+      // Prevent flash: apply theme immediately before render
+      (function() {
+        var t = localStorage.getItem('theme');
+        if (t === 'light') { /* no class needed */ }
+        else { document.documentElement.classList.add('dark'); }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,8 +17,8 @@
     <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-Cy8Z_5lE.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DtyMZHtE.css">
+    <script type="module" crossorigin src="/assets/index-BH5Bkx3E.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D5_fA0aO.css">
   </head>
   <body class="font-body-md text-body-md selection:bg-primary selection:text-on-primary bg-background text-on-background overflow-x-hidden">
     <div id="root"></div>
